@@ -17,7 +17,6 @@
     <jackson.version>2.18.3</jackson.version>
     <lombok.version>1.18.38</lombok.version>
   </properties>
-
   <dependencies>
     <dependency>
       <groupId>com.recceda</groupId>
