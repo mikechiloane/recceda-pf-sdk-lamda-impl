@@ -62,8 +62,6 @@ public class ReccedaFastLambdaHandler
                 return handleNotify(input, logger);
             } else if (path.equals("/cancel")) {
                 return handleCancel(input, logger);
-            } else if (path.equals("/return")) {
-                return handleReturn(input, logger);
             } else {
                 return createErrorResponse(404, "Endpoint not found: " + path);
             }
@@ -102,6 +100,10 @@ public class ReccedaFastLambdaHandler
         payment.setItemDescription(product.getDescription());
         payment.setMPaymentId("RECCEDA" + System.currentTimeMillis());
 
+        payment.setNotifyUrl(System.getenv("PAYFAST_NOTIFY_URL"));
+        payment.setReturnUrl(System.getenv("PAYFAST_RETURN_URL"));
+        payment.setCancelUrl(System.getenv("PAYFAST_CANCEL_URL"));
+        
         PayFastFormData formData = client.createPaymentFormData(payment);
 
         logger.log("Generated payment form data: " + formData.toString());
@@ -131,27 +133,15 @@ public class ReccedaFastLambdaHandler
     }
 
     private APIGatewayProxyResponseEvent handleCancel(APIGatewayProxyRequestEvent input, LambdaLogger logger) {
-        // TODO: Implement payment cancellation logic
         logger.log("Payment cancellation received");
         return createSuccessResponse("{\"message\":\"Payment cancelled\"}");
     }
 
-    private APIGatewayProxyResponseEvent handleReturn(APIGatewayProxyRequestEvent input, LambdaLogger logger) {
-        logger.log("Payment return received");
 
-        // Extract query parameters from PayFast
-        Map<String, String> queryParams = input.getQueryStringParameters();
-        if (queryParams != null) {
-            logger.log("Return parameters: " + queryParams.toString());
-        }
-
-        return createSuccessResponse(generateSuccessPage(queryParams));
-    }
 
     private APIGatewayProxyResponseEvent createSuccessResponse(String body) {
         return createResponse(200, body);
     }
-
 
     private APIGatewayProxyResponseEvent createCorsResponse() {
         Map<String, String> headers = new HashMap<>();
@@ -184,44 +174,5 @@ public class ReccedaFastLambdaHandler
         response.setHeaders(headers);
         response.setBody(body);
         return response;
-    }
-
-    private String generateSuccessPage(Map<String, String> queryParams) {
-        StringBuilder html = new StringBuilder();
-        html.append("<!DOCTYPE html>")
-                .append("<html><head>")
-                .append("<title>Payment Success</title>")
-                .append("<style>")
-                .append("body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; text-align: center; }")
-                .append(".success { color: #28a745; font-size: 24px; margin-bottom: 20px; }")
-                .append(".details { background: #f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0; text-align: left; }")
-                .append(".param { margin: 5px 0; }")
-                .append(".button { display: inline-block; padding: 10px 20px; background: #007cba; color: white; text-decoration: none; border-radius: 5px; margin: 10px; }")
-                .append("</style>")
-                .append("</head><body>")
-                .append("<div class='success'>✅ Payment Successful!</div>")
-                .append("<p>Thank you for your payment. Your transaction has been processed successfully.</p>");
-
-        if (queryParams != null && !queryParams.isEmpty()) {
-            html.append("<div class='details'>")
-                    .append("<h3>Payment Details:</h3>");
-
-            for (Map.Entry<String, String> entry : queryParams.entrySet()) {
-                html.append("<div class='param'>")
-                        .append("<strong>").append(entry.getKey()).append(":</strong> ")
-                        .append(entry.getValue())
-                        .append("</div>");
-            }
-
-            html.append("</div>");
-        }
-
-        html.append("<div>")
-                .append("<a href='http://127.0.0.1:3000/getProducts' class='button'>View Products</a>")
-                .append("<a href='#' onclick='window.close()' class='button'>Close</a>")
-                .append("</div>")
-                .append("</body></html>");
-
-        return html.toString();
     }
 }
