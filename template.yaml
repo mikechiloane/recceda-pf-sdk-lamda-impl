@@ -1,0 +1,100 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Recceda PayFast Lambda Function
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+    Runtime: java17
+
+Parameters:
+  PayFastMerchantId:
+    Type: String
+    Description: PayFast Merchant ID
+  PayFastMerchantKey:
+    Type: String
+    Description: PayFast Merchant Key
+    NoEcho: true
+  PayFastPassphrase:
+    Type: String
+    Description: PayFast Passphrase
+    NoEcho: true
+  IsSandbox:
+    Type: String
+    Default: 'true'
+    AllowedValues: ['true', 'false']
+    Description: Whether to use PayFast sandbox environment
+  PayFastNotifyUrl:
+    Type: String
+    Description: PayFast Notify URL
+  PayFastReturnUrl:
+    Type: String
+    Description: PayFast Return URL
+  PayFastCancelUrl:
+    Type: String
+    Description: PayFast Cancel URL
+    
+Resources:
+  ReccedaPayFastFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: com.recceda.ReccedaFastLambdaHandler::handleRequest
+      Runtime: java17
+      Environment:
+        Variables:
+          PAYFAST_MERCHANT_ID: !Ref PayFastMerchantId
+          PAYFAST_MERCHANT_KEY: !Ref PayFastMerchantKey
+          PAYFAST_PASSPHRASE: !Ref PayFastPassphrase
+          IS_SANDBOX: !Ref IsSandbox
+          PAYFAST_NOTIFY_URL: !Ref PayFastNotifyUrl
+          PAYFAST_RETURN_URL: !Ref PayFastReturnUrl
+          PAYFAST_CANCEL_URL: !Ref PayFastCancelUrl
+      Events:
+        GetProducts:
+          Type: Api
+          Properties:
+            Path: /getProducts
+            Method: get
+        Pay:
+          Type: Api
+          Properties:
+            Path: /pay/{productId}
+            Method: post
+        PayGet:
+          Type: Api
+          Properties:
+            Path: /pay/{productId}
+            Method: get
+        PayOptions:
+          Type: Api
+          Properties:
+            Path: /pay/{productId}
+            Method: options
+        Notify:
+          Type: Api
+          Properties:
+            Path: /notify
+            Method: post
+        Cancel:
+          Type: Api
+          Properties:
+            Path: /cancel
+            Method: post
+        Return:
+          Type: Api
+          Properties:
+            Path: /return
+            Method: get
+
+Outputs:
+  ReccedaPayFastApi:
+    Description: "API Gateway endpoint URL for PayFast Lambda function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+  ReccedaPayFastFunction:
+    Description: "PayFast Lambda Function ARN"
+    Value: !GetAtt ReccedaPayFastFunction.Arn
+  ReccedaPayFastFunctionIamRole:
+    Description: "Implicit IAM Role created for PayFast function"
+    Value: !GetAtt ReccedaPayFastFunctionRole.Arn

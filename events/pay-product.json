@@ -1,0 +1,16 @@
+{
+  "httpMethod": "POST",
+  "path": "/pay/1",
+  "queryStringParameters": null,
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "body": null,
+  "pathParameters": {
+    "productId": "1"
+  },
+  "requestContext": {
+    "requestId": "test-payment-request-id",
+    "stage": "test"
+  }
+}

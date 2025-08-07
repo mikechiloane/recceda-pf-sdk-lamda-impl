@@ -1,0 +1,33 @@
+# Build artifacts
+target/
+*.jar
+*.war
+
+# IDE files
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.settings/
+.project
+.classpath
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+*.env
+
+# Logs
+*.log
+logs/
+
+# AWS SAM
+.aws-sam/
+samconfig.toml
+
+# Maven
+dependency-reduced-pom.xml

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recceda PayFast Lambda Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .endpoint { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        button { padding: 10px 20px; margin: 5px; background: #007cba; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #005a8b; }
+        .response { margin-top: 10px; padding: 10px; background: #f5f5f5; border-radius: 3px; white-space: pre-wrap; }
+        .products { display: flex; gap: 10px; margin: 10px 0; }
+        .product { padding: 10px; background: #e8f4f8; border-radius: 3px; cursor: pointer; }
+        .product:hover { background: #d0e8f0; }
+    </style>
+</head>
+<body>
+    <h1>🚀 Recceda PayFast Lambda Test</h1>
+    
+    <div class="endpoint">
+        <h3>📦 Get Products</h3>
+        <button onclick="getProducts()">Get All Products</button>
+        <div id="products-response" class="response" style="display:none;"></div>
+        <div id="products-list" class="products"></div>
+    </div>
+    
+    <div class="endpoint">
+        <h3>💳 Payment Testing</h3>
+        <p>Click on a product above to test payment, or use direct links:</p>
+        <button onclick="testPayment(1)">Pay for Product 1 ($19.99)</button>
+        <button onclick="testPayment(2)">Pay for Product 2 ($29.99)</button>
+        <button onclick="testPayment(3)">Pay for Product 3 ($39.99)</button>
+        <br><br>
+        <p><strong>✅ Fixed:</strong> Payment forms now render as HTML webpages!</p>
+    </div>
+    
+    <div class="endpoint">
+        <h3>🔔 Notification Endpoints</h3>
+        <button onclick="testNotify()">Test Notify Endpoint</button>
+        <button onclick="testCancel()">Test Cancel Endpoint</button>
+        <div id="notify-response" class="response" style="display:none;"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:3000';
+        
+        async function getProducts() {
+            try {
+                const response = await fetch(`${API_BASE}/getProducts`);
+                const data = await response.json();
+                
+                document.getElementById('products-response').style.display = 'block';
+                document.getElementById('products-response').textContent = JSON.stringify(data, null, 2);
+                
+                // Display products as clickable cards
+                const productsList = document.getElementById('products-list');
+                productsList.innerHTML = data.map(product => 
+                    `<div class="product" onclick="testPayment('${product.productId}')">
+                        <strong>${product.name}</strong><br>
+                        $${product.price}<br>
+                        <small>${product.description}</small>
+                    </div>`
+                ).join('');
+                
+            } catch (error) {
+                document.getElementById('products-response').style.display = 'block';
+                document.getElementById('products-response').textContent = 'Error: ' + error.message;
+            }
+        }
+        
+        function testPayment(productId) {
+            // Open payment form in new tab
+            window.open(`${API_BASE}/pay/${productId}`, '_blank');
+        }
+        
+        async function testNotify() {
+            try {
+                const response = await fetch(`${API_BASE}/notify`, { method: 'POST' });
+                const data = await response.json();
+                
+                document.getElementById('notify-response').style.display = 'block';
+                document.getElementById('notify-response').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('notify-response').style.display = 'block';
+                document.getElementById('notify-response').textContent = 'Error: ' + error.message;
+            }
+        }
+        
+        async function testCancel() {
+            try {
+                const response = await fetch(`${API_BASE}/cancel`, { method: 'POST' });
+                const data = await response.json();
+                
+                document.getElementById('notify-response').style.display = 'block';
+                document.getElementById('notify-response').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('notify-response').style.display = 'block';
+                document.getElementById('notify-response').textContent = 'Error: ' + error.message;
+            }
+        }
+        
+        // Load products on page load
+        window.onload = getProducts;
+    </script>
+</body>
+</html>

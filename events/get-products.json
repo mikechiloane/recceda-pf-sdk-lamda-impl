@@ -1,0 +1,14 @@
+{
+  "httpMethod": "GET",
+  "path": "/getProducts",
+  "queryStringParameters": null,
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "body": null,
+  "pathParameters": null,
+  "requestContext": {
+    "requestId": "test-request-id",
+    "stage": "test"
+  }
+}

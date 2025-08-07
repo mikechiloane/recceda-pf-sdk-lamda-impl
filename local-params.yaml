@@ -1,0 +1,22 @@
+Parameters:
+  PayFastMerchantId:
+    Type: String
+    Default: "10040898"
+  PayFastMerchantKey:
+    Type: String
+    Default: "pss0yex6jzaon"
+  PayFastPassphrase:
+    Type: String
+    Default: "fabodafaboda"
+  IsSandbox:
+    Type: String
+    Default: "true"
+  PayFastNotifyUrl:
+    Type: String
+    Default: "https://4888c26a0c1e.ngrok-free.app/notify"
+  PayFastReturnUrl:
+    Type: String
+    Default: "https://4888c26a0c1e.ngrok-free.app/return"
+  PayFastCancelUrl:
+    Type: String
+    Default: "https://4888c26a0c1e.ngrok-free.app/cancel"
